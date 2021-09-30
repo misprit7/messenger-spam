@@ -6,33 +6,35 @@ from selenium.webdriver.support.expected_conditions import presence_of_element_l
 from selenium.webdriver import FirefoxOptions
 
 import time
+import re
 from pyvirtualdisplay import Display
 
 import config
 
-disp = Display()
-disp.start()
+# Virtual display, not entirely sure if it works or not but headless works fine
+# disp = Display()
+# disp.start()
 
-#This example requires Selenium WebDriver 3.13 or newer
+# Makes it run in headless mode for vm usage
 opts = FirefoxOptions()
-# opts.add_argument("--headless")
+# Comment this out for debugging
+opts.add_argument("--headless")
 with webdriver.Firefox(firefox_options=opts) as driver:
     wait = WebDriverWait(driver, 10)
-    # driver.get("https://google.com/ncr")
     driver.get("https://messenger.com")
-    # WebDriverWait(driver, 10).until(lambda d: d.find_element_by_id('email'))
     time.sleep(2)
+    # Private login file as to not put my fb login on github
     driver.find_element(By.ID, "email").send_keys(config.facebook_login['email'])
     driver.find_element(By.ID, "pass").send_keys(config.facebook_login['pw'])
     login_button = driver.find_element(By.ID, 'loginbutton')
     driver.execute_script("arguments[0].click();", login_button)
-    time.sleep(5)
-    driver.find_element(By.XPATH, "//a[@href='/t/" + config.target_id + "/']").click()
-    time.sleep(5)
-    driver.find_elements_by_css_selector("[aria-label=Message]")[0].send_keys('test')
-    time.sleep(20)
-    # driver.find_element(By.NAME, "q").send_keys("cheese" + Keys.RETURN)
-    # first_result = wait.until(presence_of_element_located((By.CSS_SELECTOR, "h3")))
-    # print(first_result.get_attribute("textContent"))
+    time.sleep(3)
 
-disp.stop()
+    # This doesn't work in headless for some reason, probably since it relies on js to load
+    # driver.find_element(By.XPATH, "//a[@href='/t/" + config.target_id + "/']").click()
+    driver.get(re.sub('\/t\/[0-9]*\/', '/t/' + config.target_id, driver.current_url))
+    time.sleep(3)
+    driver.find_elements_by_css_selector("[aria-label=Message]")[0].send_keys('test' + Keys.RETURN)
+    time.sleep(20)
+
+# disp.stop()
