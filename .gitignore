@@ -138,4 +138,5 @@ dmypy.json
 cython_debug/
 
 config.py
-credentials.json
+credentials*.json
+token.json

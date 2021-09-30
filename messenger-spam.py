@@ -18,7 +18,7 @@ import config
 # Makes it run in headless mode for vm usage
 opts = FirefoxOptions()
 # Comment this out for debugging
-# opts.add_argument("--headless")
+opts.add_argument("--headless")
 with webdriver.Firefox(firefox_options=opts) as driver:
     wait = WebDriverWait(driver, 10)
     driver.get("https://messenger.com")
