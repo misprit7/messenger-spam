@@ -75,7 +75,7 @@ def parse_parts(service, parts, folder_name, message):
                 # if the email part is text plain
                 if data:
                     text = urlsafe_b64decode(data).decode()
-                    ret += text + '\n'
+                    ret += '\n'.join([line for line in text.splitlines() if 'http' not in line]) + '\n'
             elif mimeType == "text/html":
                 # if the email part is an HTML content
                 # save the HTML file and optionally open it in the browser
@@ -173,10 +173,8 @@ def mark_as_read(service, query):
       }
     ).execute()
 
-def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
+
+def register():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -196,6 +194,13 @@ def main():
             token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
+    return service
+
+def main():
+    """Shows basic usage of the Gmail API.
+    Lists the user's Gmail labels.
+    """
+    service = register()
 
     # Call the Gmail API
     results = service.users().labels().list(userId='me').execute()
